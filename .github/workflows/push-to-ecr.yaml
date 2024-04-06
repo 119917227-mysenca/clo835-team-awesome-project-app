@@ -1,0 +1,84 @@
+name: Deploy to ECR
+
+on: 
+  push:
+    branches: [ master ]
+
+jobs:
+  
+  build:
+    
+    name: Build Image
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+        AWS_REGION: us-east-1
+
+    - name: Build, test, tag, and push DB image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY_DB: project-db
+      run: |
+        ls -ltra
+        
+        # Get Git tag
+        TAG=$(git rev-parse --short=10 HEAD)
+        
+        # Docker build
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_DB:$TAG -f Dockerfile_mysql . 
+             
+        # Unit test
+        docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=pw -d $ECR_REGISTRY/$ECR_REPOSITORY_DB:$TAG
+        docker ps
+        
+        echo "Pause for 10 seconds to let container start"
+        sleep 10
+        
+        docker exec mysql mysql -ppw -e "show databases;"
+        
+        # Docker push
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_DB:$TAG
+        
+    - name: Build, test, tag, and push WebApp image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY_APP: project-app
+      run: |
+        ls -ltra
+        
+        # Get Git tag
+        TAG=$(git rev-parse --short=10 HEAD)
+        
+        # Docker build
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_APP:$TAG -f Dockerfile .
+
+        # set variables
+        export DBHOST=172.17.0.2
+        export DBPORT=3306
+        export DBUSER=root
+        export DATABASE=employees
+        export DBPWD=pw
+        export APP_COLOR=blue
+        
+        # Unit test
+        docker run -p 8080:8080  -e DBHOST=$DBHOST -e DBPORT=$DBPORT -e  DBUSER=$DBUSER -e DBPWD=$DBPWD -e DATABASE=$DATABASE -e APP_COLOR=$APP_COLOR -d $ECR_REGISTRY/$ECR_REPOSITORY_APP:"$TAG"
+        docker ps       
+        
+        echo "Pause for 10 seconds to let container start"
+        sleep 10
+        
+        curl localhost:8080
+        
+        # Docker push
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_APP:$TAG
