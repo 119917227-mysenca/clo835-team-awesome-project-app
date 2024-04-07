@@ -14,6 +14,12 @@ DATABASE = os.environ.get("DATABASE") or "employees"
 COLOR_FROM_ENV = os.environ.get('APP_COLOR') or "lime"
 DBPORT = int(os.environ.get("DBPORT"))
 
+# App config variables
+groupName = os.environ.get("groupName") or "<Group Name>"
+slogan = os.environ.get("slogan") or "<Group Slogan>"
+imageURL = os.environ.get("imageURL") or ""
+
+
 # Create a connection to the MySQL database
 db_conn = connections.Connection(
     host= DBHOST,
@@ -47,7 +53,7 @@ COLOR = random.choice(["red", "green", "blue", "blue2", "darkblue", "pink", "lim
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
-    return render_template('addemp.html', color=color_codes[COLOR])
+    return render_template('addemp.html', color=color_codes[COLOR], groupName=groupName, imageURL=imageURL, slogan=slogan)
 
 @app.route("/about", methods=['GET','POST'])
 def about():
