@@ -72,13 +72,13 @@ jobs:
         export APP_COLOR=blue
         
         # Unit test
-        docker run -p 81:81  -e DBHOST=$DBHOST -e DBPORT=$DBPORT -e  DBUSER=$DBUSER -e DBPWD=$DBPWD -e DATABASE=$DATABASE -e APP_COLOR=$APP_COLOR -d $ECR_REGISTRY/$ECR_REPOSITORY_APP:"$TAG"
+        docker run -p 8080:8080  -e DBHOST=$DBHOST -e DBPORT=$DBPORT -e  DBUSER=$DBUSER -e DBPWD=$DBPWD -e DATABASE=$DATABASE -e APP_COLOR=$APP_COLOR -d $ECR_REGISTRY/$ECR_REPOSITORY_APP:"$TAG"
         docker ps       
         
         echo "Pause for 10 seconds to let container start"
         sleep 10
         
-        curl localhost:81
+        curl localhost:8080
         
         # Docker push
         docker push $ECR_REGISTRY/$ECR_REPOSITORY_APP:$TAG
