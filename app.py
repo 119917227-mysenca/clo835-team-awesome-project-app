@@ -3,6 +3,9 @@ from pymysql import connections
 import os
 import random
 import argparse
+import boto3
+from boto3.session import Session
+from urllib.parse import urlparse
 
 
 app = Flask(__name__)
@@ -19,6 +22,13 @@ GROUPNAME = os.environ.get("GROUPNAME") or "<Group Name>"
 SLOGAN = os.environ.get("SLOGAN") or "<Group Slogan>"
 IMAGEURL = os.environ.get("IMAGEURL") or "<IMAGEURL>"
 
+#Environment
+ENVIRONMENT = os.environ.get("ENVIRONMENT") or 'dev'
+
+#AWS Credentials
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID") or None
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY") or None
+AWS_SESSION_TOKEN = os.environ.get("AWS_SESSION_TOKEN") or None
 
 # Create a connection to the MySQL database
 db_conn = connections.Connection(
@@ -50,6 +60,14 @@ SUPPORTED_COLORS = ",".join(color_codes.keys())
 # Generate a random color
 COLOR = random.choice(["red", "green", "blue", "blue2", "darkblue", "pink", "lime"])
 
+#Download background image from s3
+if ENVIRONMENT == 'prod':
+    parseS3 = urlparse(IMAGEURL, allow_fragments=False)
+    imagePath = parseS3.path.lstrip('/')
+    new_session = Session(aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY, aws_session_token=AWS_SESSION_TOKEN)
+    s3 = new_session.client("s3")
+    s3.download_file(parseS3.netloc, imagePath, './static/bg.jpg')
+    IMAGEURL='./static/bg.jpg'
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
