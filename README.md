@@ -34,4 +34,4 @@ export APP_COLOR=blue
 export IMAGEURL='s3://clo835-final-group5/seneca.jpg'
 ```
 ### Run the application, make sure it is visible in the browser
-```docker run -p 8080:8080  -e DBHOST=$DBHOST -e DBPORT=$DBPORT -e  DBUSER=$DBUSER -e DBPWD=$DBPWD  my_app```
+```docker run -p 81:81  -e DBHOST=$DBHOST -e DBPORT=$DBPORT -e  DBUSER=$DBUSER -e DBPWD=$DBPWD -e IMAGEURL=$IMAGEURL my_app```
