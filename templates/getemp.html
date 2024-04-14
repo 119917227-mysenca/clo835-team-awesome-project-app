@@ -2,13 +2,14 @@
 <html>
 <head>
 	<title>Get Employee Information</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <center>
 	<font color="black" size="5" style="font-family: avenir">
 
 		<h1 style="color: DodgerBlue">Employee Information</h1>
 
-		<body style="background: {{ color }};">
+		<body style="background-image: url('{{ IMAGEURL }}');" >
 
 			<form action="/fetchdata" autocomplete="on" method="POST">
 
