@@ -21,7 +21,10 @@ DBPORT = int(os.environ.get("DBPORT"))
 GROUPNAME = os.environ.get("GROUPNAME") or "<Group Name>"
 SLOGAN = os.environ.get("SLOGAN") or "<Group Slogan>"
 IMAGEURL = os.environ.get("IMAGEURL") or "<IMAGEURL>"
-
+# log image url to console
+print("# Background IMAGEURL: ", IMAGEURL)
+# log image url to error.log file
+app.logger.info("# Background IMAGEURL: ", IMAGEURL)
 #Environment
 ENVIRONMENT = os.environ.get("ENVIRONMENT") or 'dev'
 
