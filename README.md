@@ -23,11 +23,6 @@ sudo python3 app.py
 
 ### Example when running DB runs as a docker container and app is running locally
 ```
-export DBHOST=127.0.0.1
-export DBPORT=3307
-```
-### Example when running DB runs as a docker container and app is running locally
-```
 export DBHOST=172.17.0.2
 export DBPORT=3306
 ```
@@ -36,6 +31,7 @@ export DBUSER=root
 export DATABASE=employees
 export DBPWD=pw
 export APP_COLOR=blue
+export IMAGEURL='s3://clo835-final-group5/seneca.jpg'
 ```
 ### Run the application, make sure it is visible in the browser
 ```docker run -p 8080:8080  -e DBHOST=$DBHOST -e DBPORT=$DBPORT -e  DBUSER=$DBUSER -e DBPWD=$DBPWD  my_app```
